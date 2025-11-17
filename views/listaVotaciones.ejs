@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/images/iconapp.png" type="image/x-icon">
+    <title><%= title %></title>
+
+    <style>
+        :root {
+        --primary-color: #20c997; 
+        --text-color: #e9ecef;
+        --background-color: #002c53;
+        --card-bg: #213d56;
+        }
+
+        /* --- Estilos Generales --- */
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        section {
+            padding: 1rem;
+        }
+
+        /* --- Lista de Películas (Grid para Mobile) --- */
+        .listaPeliculas {
+            list-style: none; /* Elimina los puntos de la lista */
+            padding: 0;
+            margin: 0;
+            display: grid;
+            /* Una columna de ancho completo en móvil */
+            grid-template-columns: 1fr; 
+            gap: 1.5rem; /* Espacio entre las tarjetas */
+        }
+
+        /* --- Tarjeta de Película (<li>) --- */
+        .listaPeliculas li {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra suave */
+            overflow: hidden; /* Importante para que la imagen no rompa el borde */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .listaPeliculas li:hover {
+            transform: translateY(-5px); /* Pequeño levantamiento al pasar el ratón */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Enlace (<a>) --- */
+        .listaPeliculas li a {
+            text-decoration: none; /* Elimina el subrayado */
+            color: inherit; /* Hereda el color del texto de la tarjeta */
+            display: flex;
+            flex-direction: column; /* Apila imagen, título y votos verticalmente */
+            height: 100%;
+        }
+
+        /* --- Contenedor de Imagen (<div>) y la Imagen (<img>) --- */
+        .listaPeliculas li div {
+            /* Define un alto fijo para el contenedor del póster en móvil */
+            height: 300px; 
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .listaPeliculas li img {
+            /* Sobrescribe los estilos inline para hacerla responsive */
+            width: 100% !important; 
+            height: 100% !important;
+            /* object-fit: cover es mejor que fill para evitar distorsión */
+            object-fit: cover !important; 
+            object-position: top;
+        }
+
+        /* --- Título (<h2>) y Votos (<p>) --- */
+        .listaPeliculas h2 {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem 0;
+            margin: 0;
+        }
+
+        .listaPeliculas p {
+            color: var(--primary-color); /* Color de acento para los votos */
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 0 1rem 1rem;
+            margin: 0;
+        }
+
+        @media (min-width: 600px) {
+            /* --- Diseño de Tarjeta (Grid de 2 a 3 columnas) --- */
+            .listaPeliculas {
+                /* Tres columnas mínimas, auto-ajustables y responsivas */
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            
+            /* --- Ajuste de la Imagen --- */
+            .listaPeliculas li div {
+                /* La altura se puede hacer un poco mayor en desktop */
+                height: 350px; 
+            }
+            
+            /* --- Título y Votos --- */
+            .listaPeliculas h2 {
+                font-size: 1.2rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <%- include('./partial/botonesNavegacion') %>
+    
+    <section>
+        <ul class="listaPeliculas">
+
+            <% movieList.map(movie => { %>
+                <li>
+                    <a href="/noche-pelis/pelicula/<%= movie.imdbID %>">
+                        <div>
+                            <img src="<%= movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : '/images/placeholder.jpg' %>" alt="<%= movie.Title %> poster" style="width:200px; height:300px; object-fit:fill;">
+                        </div>
+                        <h2><%= movie.Title %> (<%= movie.Year %>)</h2>
+                        <p>Votos: <%= movie.votos %></p>
+    
+                    </a>
+                </li>
+
+            <% }) %>
+
+        </ul>
+    </section>
+</body>
+</html>

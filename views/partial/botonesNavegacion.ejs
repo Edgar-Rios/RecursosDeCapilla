@@ -1,0 +1,92 @@
+<header class="main-header">
+    <div class="header-content">
+        <!-- <a href="/" class="header-title"> -->
+        <div class="header-title">
+            <span class="logo-icon">🎬</span> Noche de Películas
+        </div>
+        <!-- </a> -->
+        
+        <nav class="header-nav">
+            <a href="/noche-pelis/listaVotaciones" class="nav-button">Votaciones</a>
+            <a href="/noche-pelis" class="nav-button">Buscador</a>
+        </nav>
+    </div>
+</header>
+<style>
+    /* --- Estilos del Header --- */
+.main-header {
+    background-color: var(--card-bg); /* Un tono más claro que el fondo principal */
+    border-bottom: 2px solid var(--primary-color); /* Línea de acento verde */
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    user-select: none;
+}
+
+.header-content {
+    max-width: 1200px; /* Limita el ancho en pantallas grandes */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between; /* Distribuye el título y la navegación */
+    align-items: center;
+}
+
+/* --- Título/Logo --- */
+.header-title {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    margin-right: 0.5rem;
+    color: var(--primary-color); /* Color de acento para el icono */
+}
+
+/* --- Navegación y Botones --- */
+.header-nav {
+    display: flex;
+    gap: 1rem; /* Espacio entre los botones */
+}
+
+.nav-button {
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Efecto Hover para los botones */
+.nav-button:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color); /* El texto oscuro sobre el color primario */
+}
+
+/* --- Responsive (Ajustes para pantallas pequeñas) --- */
+@media (max-width: 500px) {
+    .header-content {
+        flex-direction: column; /* Apila el título y los botones verticalmente */
+        align-items: flex-start;
+    }
+    
+    .header-nav {
+        margin-top: 0.5rem;
+        width: 100%;
+        /* Asegura que los botones ocupen el ancho completo */
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        gap: 0.5rem;
+    }
+
+    .nav-button {
+        text-align: center;
+        padding: 0.3rem 0; /* Aumenta el área de toque */
+    }
+}
+</style>

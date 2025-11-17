@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title><%= title %></title>
+    <link rel="shortcut icon" href="/images/iconapp.png" type="image/x-icon">
+    <style>
+        :root {
+            --gap: 16px;
+            --muted: #666;
+            --accent: #0078d4;
+            --max-width: 1100px;
+
+            --primary-color: #20c997; 
+            --text-color: #e9ecef;
+            --background-color: #002c53;
+            --card-bg: #213d56;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        html,body{
+            background-color: var(--background-color);
+            height:100%;
+            margin:0;
+            font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+        }
+        .container{max-width:var(--max-width);margin:28px auto;padding:0 16px;}
+        .buscador {
+            background-color: #adadad;
+        }
+        .search-bar{display:flex;gap:8px;align-items:center;margin-bottom:20px;}
+        .search-bar form{display:flex;flex:1;gap:8px;}
+        .search-bar input[type="search"]{
+            flex:1;padding:10px 12px;border:1px solid #ccc;border-radius:6px;font-size:16px;
+            outline:none;
+        }
+        .search-bar button{
+            background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:6px;cursor:pointer;
+            font-weight:600;
+        }
+        .meta{color:var(--muted);font-size:14px;}
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+            gap:var(--gap);
+            position: relative;
+        }
+        .card{
+            background:var(--card-bg);border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);
+            display:flex;flex-direction:column;height:100%;
+        }
+        .poster{background:#eee;height:240px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);}
+        .card-body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1;}
+        .title{font-size:15px;font-weight:700;margin:0;}
+        .sub{font-size:13px;color:var(--muted);}
+        .empty{
+            padding:28px;
+            text-align:center;
+            color:var(--muted);
+            position: absolute;
+        }
+        @media (max-width:420px){ .poster{height:180px} }
+    </style>
+</head>
+<body>
+
+    <%- include('./partial/botonesNavegacion') %>
+
+    <div class="container">
+        
+        <div class="search-bar" role="search">
+            <form id="searchForm" aria-label="Search movies">
+                <input class="buscador" id="searchInput" type="search" placeholder="pone tu peli favorita en ingles por favor😅..." aria-label="Movie title" />
+                <button type="submit">Buscar</button>
+            </form>
+            <!-- <div class="meta" id="metaInfo" aria-live="polite"></div> -->
+            
+        </div>
+ 
+        <div id="moviesGrid" class="grid" aria-live="polite">
+            <!-- Movie cards will be rendered here -->
+            
+        </div>
+    </div>
+
+    <script>
+        // Optionally set an OMDb API key to fetch real data:
+        // const OMDB_API_KEY = 'your_api_key_here';
+        const OMDB_API_KEY = 'f9e094e7'; // leave empty to use local mock data
+
+        const sampleMovies = [
+            { title: "The Shawshank Redemption", year: "1994", poster: "" },
+            { title: "Inception", year: "2010", poster: "" },
+            { title: "Interstellar", year: "2014", poster: "" },
+            { title: "Parasite", year: "2019", poster: "" },
+            { title: "Spirited Away", year: "2001", poster: "" },
+            { title: "The Matrix", year: "1999", poster: "" }
+        ];
+
+        const grid = document.getElementById('moviesGrid');
+        const form = document.getElementById('searchForm');
+        const input = document.getElementById('searchInput');
+        // const meta = document.getElementById('metaInfo');
+
+        function renderMovies(movies){
+            grid.innerHTML = '';
+            if(!movies || movies.length === 0){
+                grid.innerHTML = '<div class="empty">Sin resultados....</div>';
+                // meta.textContent = '';
+                return;
+            }
+            // meta.textContent = `${movies.length} result${movies.length>1?'s':''}`;
+            const frag = document.createDocumentFragment();
+            movies.forEach(m => {
+                const card = document.createElement('article');
+                card.className = 'card';
+                console.log(m.imdbID)
+                card.innerHTML = `
+                    <a href="/noche-pelis/pelicula/${m.imdbID}" class="card-link" aria-label="${escapeHtml(m.Title || m.title)}">
+                    <div class="poster">
+                        <img src="${m.Poster && m.Poster !== 'N/A' ? m.Poster: '/images/placeholder.jpg'} " alt="${escapeHtml(m.Title || m.title)} poster" style="width:100%;height:100%;object-fit:fill;"> 
+                    </div>
+                    <div class="card-body">
+                        <div class="title">${escapeHtml(m.Title || m.title)}</div>
+                        <div class="sub">${escapeHtml(m.Year || m.year || '—')}</div>
+                    </div>
+                    </a>
+                `;
+                frag.appendChild(card);
+            });
+            grid.appendChild(frag);
+        }
+
+        function escapeHtml(str){ return String(str || '').replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s])) }
+
+        async function searchMovies(query){
+            query = (query||'').trim();
+            if(!query){
+                renderMovies([]);
+                console.log('no pelicula');
+                return;
+            }
+            try{
+                // meta.textContent = 'Searching...';
+                if(query.length == 2){
+                    // If single word, try to get by exact title first
+                    const resExact = await fetch(`https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(query)}&type=movie`);
+                    const dataExact = await resExact.json();
+                    if(dataExact && dataExact.Response === "True"){
+                        renderMovies([dataExact]);
+                        return;
+                    }
+                }
+                else {
+                    const res = await fetch(`https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}&type=movie`);
+                    const data = await res.json();
+                    console.log(data)
+                    if(data && data.Search){
+                        renderMovies(data.Search);
+                    } else {
+                        renderMovies([]);
+                    }
+                }
+                
+            }catch(err){
+                console.error(err);
+                renderMovies([]);
+            }
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            searchMovies(input.value);
+        });
+
+        // optional: search as you type with debounce
+        let debounce;
+        input.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(()=> searchMovies(input.value), 350);
+        });
+
+        // initial empty state
+        renderMovies([]);
+    </script>
+</body>
+</html>

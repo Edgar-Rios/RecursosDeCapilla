@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title? title : 'Detalles de Película' %></title>
+    <!-- <link rel="stylesheet" href="styles.css"> </head> -->
+    <link rel="shortcut icon" href="/images/iconapp.png" type="image/x-icon">
+    
+<style>
+/* -------------------------------------- */
+/* 1. Reset Básico y Variables            */
+/* -------------------------------------- */
+
+* {
+    box-sizing: border-box; 
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* Color de acento suave y vibrante */
+    --primary-color: #20c997; 
+    
+    /* Texto claro para el fondo oscuro */
+    --text-color: #e9ecef;
+    
+    /* Fondo principal (se corrigió el doble '#') */
+    --background-color: #002c53;
+    
+    /* Fondo de la tarjeta (azul oscuro un poco más claro que el fondo) */
+    --card-bg: #213d56;
+
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden; /* IMPORTANTE: Previene el desplazamiento horizontal */
+}
+
+.useName {
+    padding:8px;
+    width:70%;
+    max-width:200px;
+    margin:0 10px 10px 0;
+}
+/* -------------------------------------- */
+/* 2. Contenedor Principal (Centrado)     */
+/* -------------------------------------- */
+
+.movie-card-container {
+    max-width: 900px; /* Limita el ancho de la tarjeta en pantallas grandes */
+    width: 90%; /* Asegura que la tarjeta no sea demasiado pequeña en móvil */
+    margin: 40px auto; /* Centra la tarjeta horizontalmente */
+    padding: 20px;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+}
+
+/* -------------------------------------- */
+/* 3. Estilos por Defecto (Móvil: < 450px)*/
+/* -------------------------------------- */
+
+.card-movie {
+    display: flex;
+    flex-direction: column; /* Apila el póster, metadatos y trama verticalmente */
+    gap: 15px;
+}
+
+/* 1. Contenedor para la Proporción (Reemplaza el antiguo .card-thumb) */
+.card-thumb-container {
+    /* Mantén los estilos de apariencia y proporción del DIV anterior */
+    width: 100%; 
+    background-color: #ccc; 
+    border-radius: 6px;
+    
+    /* Configuración clave para la proporción */
+    position: relative; /* Necesario para que la imagen absoluta funcione */
+    padding-top: 60%;   /* Establece la altura al 60% del ancho */
+    overflow: hidden;   /* Opcional, asegura que nada se salga del borde redondeado */
+}
+
+/* 2. Estilo de la Imagen (La etiqueta <img>) */
+.card-thumb {
+    /* Hace que la imagen llene el espacio del contenedor */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Reemplaza background-size: cover; */
+    object-fit: fill; 
+    
+    /* Reemplaza background-position: center; */
+    object-position: center; 
+}
+/* Título y Metadatos */
+.card-title {
+    font-size: 1.8em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.movie-stats {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+}
+
+.stat-item {
+    padding: 3px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Botón de Acción */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 15px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%; /* Ocupa el ancho completo en móvil */
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #e6b300;
+}
+
+/* Trama */
+.card-plot-container h3 {
+    margin-top: 10px;
+    font-size: 1.2em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+
+/* -------------------------------------- */
+/* 4. MEDIA QUERY (Desktop/Tablet: > 450px) */
+/* -------------------------------------- */
+
+@media (min-width: 450px) {
+    
+    .card-movie {
+        /* Define la estructura de dos columnas con Grid */
+        display: grid;
+        grid-template-columns: 250px 1fr; /* 250px fijo para el póster, el resto para el contenido */
+        grid-template-areas: 
+            "thumb body"
+            "plot plot"; /* La trama ocupará ambas columnas */
+        gap: 20px 30px; /* Espacio vertical y horizontal */
+    }
+
+    /* * 1. Definición del Contenedor de Proporción 
+     * Aquí es donde va la nueva proporción (130%) 
+     */
+    .card-thumb-container {
+        /* Sobrescribe la proporción del móvil (60%) */
+        padding-top: 130%; 
+        /* Mantén el fondo gris y el border-radius si no están definidos en otro sitio */
+        /* background-color: #ccc; 
+        border-radius: 6px; */
+    }
+
+    .card-thumb-container {
+        grid-area: thumb;
+    }
+    
+    .card-body {
+        grid-area: body;
+        padding-top: 0; /* Asegura la alineación superior */
+    }
+
+    .card-plot-container {
+        grid-area: plot;
+        /* Ocupa las dos columnas (lo mismo que grid-column: 1 / span 2;) */
+        margin-top: 0;
+    }
+
+    /* Ajuste de elementos internos para desktop */
+    .card-actions {
+        /* Deshace el ancho completo del botón y lo alinea a la izquierda */
+        text-align: left;
+        margin-top: 20px;
+    }
+    
+    .btn-primary {
+        width: auto;
+        max-width: 200px; /* Limita el ancho del botón en desktop */
+    }
+}
+</style>
+<body>
+
+    <%- include('./partial/botonesNavegacion') %>
+
+    <section class="movie-card-container">
+        
+        <article class="card-movie">
+            <div class="card-thumb-container">
+                <img 
+                    class="card-thumb" 
+                    src="<%= movie && movie.Poster && movie.Poster !== 'N/A' ? movie.Poster : '/images/placeholder.jpg' %>" 
+                    alt="Póster de la película" 
+                />
+            </div>
+            <div class="card-body">
+                <h1 class="card-title"><%= movie && movie.Title ? movie.Title : 'Título Desconocido' %></h1>
+                
+                <div class="movie-stats">
+                    <span class=" card-year">
+                        Año: <%= movie && movie.Year ? movie.Year : '—' %>
+                    </span>
+                    <span class=" card-genre">
+                        Género: <%= movie && movie.Genre && movie.Genre !== 'N/A' ? movie.Genre : 'Desconocido' %>
+                    </span>
+                    <span class="stat-item card-votes">
+                        Votos: (<%= movie && movie.votaciones ? movie.votaciones : '0' %>)
+                    </span>
+                </div>
+
+                <form id="votacionForm" class="card-actions" action="/noche-pelis/votar" method="POST" aria-label="Formulario de votación">
+                    <input type="text" name="peliculaId" value="<%= movie && movie.imdbID ? movie.imdbID : '' %>" hidden>
+                    <input type="text" class="useName" id="userName" name="userName" placeholder="Tu nombre" aria-label="Tu nombre" required>
+                    <button class="btn btn-primary">Votar ahora</button>
+                </form>
+            </div>
+            
+            <div class="card-plot-container">
+                <h3>Sinopsis</h3>
+                <p class="card-plot">
+                    <%= movie && movie.Plot && movie.Plot !== 'N/A' ? movie.Plot : 'No hay descripción disponible.' %>
+                </p>
+            </div>
+            
+        </article>
+        
+    </section>
+    
+</body>
+</html>

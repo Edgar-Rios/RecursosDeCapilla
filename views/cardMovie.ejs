@@ -228,6 +228,11 @@ body {
                     <span class=" card-genre">
                         Género: <%= movie && movie.Genre && movie.Genre !== 'N/A' ? movie.Genre : 'Desconocido' %>
                     </span>
+                    <span class="card-duration">
+                        Duración: <%= movie && movie.Runtime && movie.Runtime !== 'N/A' ? movie.Runtime : 'Desconocida' %>
+                    </span>
+                </div>
+                <div class="movie-stats">
                     <span class="stat-item card-votes">
                         Votos: (<%= movie && movie.votaciones ? movie.votaciones : '0' %>)
                     </span>
